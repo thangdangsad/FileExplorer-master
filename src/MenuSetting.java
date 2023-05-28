@@ -1,6 +1,4 @@
-/**
- * Created by hp on 13-04-2017.
- */
+
 public class MenuSetting {
     public String view;
     public FileTreeItem currItem;

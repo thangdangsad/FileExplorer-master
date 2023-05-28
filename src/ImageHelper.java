@@ -7,9 +7,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 
-/**
- * Created by hp on 10-04-2017.
- */
+
 public class ImageHelper {
 
     public static final int SMALL_ICON=0;

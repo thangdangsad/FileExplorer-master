@@ -1,8 +1,5 @@
 import javafx.scene.image.ImageView;
 
-/**
- * Created by hp on 10-04-2017.
- */
 public class FileDetails {
     private ImageView icon;
     private String fileName;

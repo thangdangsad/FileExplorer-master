@@ -74,14 +74,14 @@ public class Controller implements Initializable {
         }
         tCurrDir.setText(System.getProperty("user.dir"));
         drives = FXCollections.observableArrayList();
-        /*if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+        if(System.getProperty("os.name").toLowerCase().contains("windows")) {
 
             Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
             for (Path name : rootDirectories) {
                 FileTreeItem treeNode = new FileTreeItem(name.toFile());
                 drives.add(treeNode);
             }
-        }*/
+        }
 
         File[] f = File.listRoots();
         for (int i = 0; i < f.length; i++)

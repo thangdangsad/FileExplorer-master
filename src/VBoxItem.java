@@ -16,9 +16,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by hp on 11-04-2017.
- */
 public class VBoxItem extends VBox {
     public FileTreeItem item;
     String s;
