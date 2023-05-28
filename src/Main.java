@@ -12,7 +12,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("mainview.fxml"));
         primaryStage.setTitle("File Explorer");
         primaryStage.getIcons().add(FileTreeItem.folderImage);
-        primaryStage.setScene(new Scene(root, 800, 500));
+        primaryStage.setScene(new Scene(root, 850, 500));
         primaryStage.show();
     }
 
