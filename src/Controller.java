@@ -1,5 +1,6 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -20,7 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
 import java.util.Stack;
@@ -41,6 +44,14 @@ public class Controller implements Initializable {
     public MenuItem menuDetails;
     public MenuItem menuTiles;
 
+    @FXML
+    private Button btcoppy;
+    @FXML
+    private Button btcreate;
+    @FXML
+    private Button btpaste;
+    @FXML
+    private Button btdelete;
     private TableColumn tableIcon;
     private TableColumn tableName;
     private TableColumn tableSize;
@@ -94,7 +105,7 @@ public class Controller implements Initializable {
         rootNode=new FileTreeItem(hostName);
         treeView.setRoot(rootNode);
         FileTreeItem currItem= getItemFromAddress(System.getProperty("user.dir"));
-        //FileTreeItem currItem= getItemFromAddress("/home");
+
 
         treeView.getSelectionModel().select(currItem);
         showItems(currItem);
@@ -154,15 +165,10 @@ public class Controller implements Initializable {
                     if(rowData.getItem().isDirectory())
                     {
                         showItems(rowData.getItem());
-                        //addTileItems(rowData.getItem());
+
                     }
                     else
                     {
-                        /*try {
-                            Desktop.getDesktop().open(rowData.getItem().getFile());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }*/
                         try {
                             if( Desktop.isDesktopSupported() )
                             {
@@ -192,7 +198,7 @@ public class Controller implements Initializable {
                             current=backlist.pop();
                             System.out.println("Stack Poped -> "+current.getAbsolutePath());
                             showItems(current);
-                           //addTileItems(current);
+
                         }
                         else {
                             System.out.println("Stack Pushed -> "+current.getAbsolutePath());
@@ -203,21 +209,67 @@ public class Controller implements Initializable {
                 }
         );
 
+        btcoppy.setOnAction(event -> {
+
+                String source = currItem.getFile().getAbsolutePath();
+                // Tạo đường dẫn đích để paste
+                String destination ="user.dir";
+
+                // Copy file bằng Files.copy()
+                try {
+                    Files.copy(Paths.get(source), Paths.get(destination));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            btpaste.setOnMouseClicked(event ->{
+                String source = currItem.getFile().getAbsolutePath();
+                // Tạo đường dẫn đích để paste
+                String destination ="user.dir";
+                // Copy file bằng Files.copy()
+                try {
+                    Files.copy(Paths.get(source), Paths.get(destination));
+
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+
+                }
+        });
+        btdelete.setOnMouseClicked(event -> {
+            if(currItem.getFile().isFile()) {
+                try {
+                    Files.delete(currItem.getFile().toPath());
+                    showItems((FileTreeItem) currItem.getParent());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.out.println("Không thể xóa file");
+                }
+            } else {
+               
+            }
+        });
+        btcreate.setOnAction(event -> {});
+
+
         bUp.setOnMouseClicked(event ->
                 {
                     if(!backlist.peek().getAbsolutePath().equals(hostName) && backlist.peek().getFile().getParent()==null){
                         showItems(rootNode);
-                        //addTileItems(rootNode);
+
                     }
                     else if (!backlist.peek().getAbsolutePath().equals(hostName) && backlist.peek().getFile().getParent()!=null) {
                         System.out.println(" Parent : " + backlist.peek().getFile().getParent());
                         FileTreeItem item = getItemFromAddress(backlist.peek().getFile().getParent());
                         showItems(item);
-                        //addTileItems(item);
+
                     }
                 }
         );
+
     }
+
+
 
     private void addTileItems(FileTreeItem item) {
         treeView.getSelectionModel().select(item);
@@ -260,12 +312,12 @@ public class Controller implements Initializable {
         for (FileTreeItem fileItem : list) {
             if(list==drives)name=fileItem.getAbsolutePath();
             else name=fileItem.getFile().getName();
-            //System.out.println("Loading files "+fileItem.getFile().toString());
+
             FileDetails fileDetails = new FileDetails(new ImageView(ImageHelper.getIcon(fileItem,ImageHelper.SMALL_ICON)),
                     name,
                     String.valueOf(fileItem.getFile().length()),
                     String.valueOf(sdf.format(fileItem.getFile().lastModified())), fileItem);
-            //FileDetails item_2 = new FileDetails(new ImageView(writableImage),"File2","700kb","20-4-17");
+
             imgList.add(fileDetails);
         }
 
@@ -289,7 +341,6 @@ public class Controller implements Initializable {
             filename="/";
             for (FileTreeItem item: drives)
             {
-                //System.out.println(item.getFile().toString());
                 if(item.getFile().toString().equals(filename))
                 {
                     fileItem=item;
@@ -303,10 +354,9 @@ public class Controller implements Initializable {
             if(isDrive && System.getProperty("os.name").toLowerCase().contains("windows")) {
                 filename+="\\";
                 isDrive=false;
-                //ObservableList<FileTreeItem> children= rootNode.getChildren();
+
                 for (FileTreeItem item: drives)
                 {
-                    //System.out.println(item.getFile().toString());
                     if(item.getFile().toString().equals(filename))
                     {
                         fileItem=item;
@@ -315,12 +365,12 @@ public class Controller implements Initializable {
                 }
             }
             else {
-                //System.out.println("In Else Item ");
+
                 fileItem.getChildren();
                 fileItem.setExpanded(true);
                 for (FileTreeItem item:fileItem.childrenArray)
                 {
-                    //System.out.println("In for loop "+item.getFile().toString());
+
                     if(item.getFile().toString().equals(filename))
                     {
                         fileItem=item;
@@ -331,54 +381,12 @@ public class Controller implements Initializable {
                 else filename+="/";
             }
         }
-        //System.out.println("Returned Item "+fileItem);
+
         return fileItem;
     }
-    /*private FileTreeItem getItemFromAddress(String currDir) {
-        boolean isDrive=true;
-        StringTokenizer st = new StringTokenizer(currDir,"\\");
-        FileTreeItem fileItem=null;
-        String filename="";
-        rootNode.setExpanded(true);
-        while (st.hasMoreTokens()) {
-            filename+=st.nextToken();
-            System.out.println(filename);
-            if(isDrive) {
-                filename+="\\";
-                isDrive=false;
-                //ObservableList<FileTreeItem> children= rootNode.getChildren();
-                for (FileTreeItem item: drives)
-                {
-                    //System.out.println(item.getFile().toString());
-                    if(item.getFile().toString().equals(filename))
-                    {
-                        fileItem=item;
-                        break;
-                    }
-                }
-            }
-            else {
-                //System.out.println("In Else Item ");
-                fileItem.getChildren();
-                fileItem.setExpanded(true);
-                for (FileTreeItem item:fileItem.childrenArray)
-                {
-                    //System.out.println("In for loop "+item.getFile().toString());
-                    if(item.getFile().toString().equals(filename))
-                    {
-                        fileItem=item;
-                        break;
-                    }
-                }
-                filename+="\\";
-            }
-        }
-        //System.out.println("Returned Item "+fileItem);
-        return fileItem;
-    }*/
 
     public void treeViewMouseClicked(MouseEvent mouseEvent) {
-        //System.out.println(((TreeItem)(treeView.getSelectionModel().getSelectedItem())).getValue());
+
         FileTreeItem item = (FileTreeItem) treeView.getSelectionModel().getSelectedItem();
         System.out.println(item.getAbsolutePath());
         showItems(item);
